@@ -1,6 +1,7 @@
 package com.emservices.Employee.Management.Application.service;
 
 import com.emservices.Employee.Management.Application.dto.EmployeeRequest;
+import com.emservices.Employee.Management.Application.dto.EmployeeResponse;
 import com.emservices.Employee.Management.Application.entity.Employee;
 import com.emservices.Employee.Management.Application.repository.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class EmployeeService {
@@ -61,28 +63,48 @@ public class EmployeeService {
     }
 
 
-    public List<Employee> getAllEmployees(int page, int limit, String search) {
+    public List<EmployeeResponse> getAllEmployees(int page, int limit, String search) {
         List<Employee> employeeList;
+        long totalCount;
 
         if (search != null && !search.isEmpty()) {
-            // Search across all records first
-//            IgnoreCase: This ensures that the search is case-insensitive, meaning it will match both upper and lower case characters in the name.
             List<Employee> allMatchingEmployees = employeeRepository.findByNameContainingIgnoreCase(search);
 
-            // Apply pagination manually
             int start = Math.min(page * limit, allMatchingEmployees.size());
             int end = Math.min((page + 1) * limit, allMatchingEmployees.size());
             employeeList = allMatchingEmployees.subList(start, end);
+
+            // Calculate total count based on search results
+            totalCount = allMatchingEmployees.size();
         } else {
             Pageable pageable = PageRequest.of(page, limit);
             Page<Employee> employeePage = employeeRepository.findAll(pageable);
             employeeList = employeePage.getContent();
+
+            // Store total count directly in the variable
+            totalCount = employeePage.getTotalElements();
         }
 
-        return employeeList;
+        // Convert Employee to EmployeeResponse and set totalCount
+        List<EmployeeResponse> employeeResponses = employeeList.stream()
+                .map(employee -> {
+                    EmployeeResponse response = new EmployeeResponse();
+                    // Map fields from Employee to EmployeeResponse
+                    response.setId(employee.getId());
+                    response.setName(employee.getName());
+                    response.setEmpId(employee.getEmpId());
+                    response.setMobile(employee.getMobile());
+                    response.setEmail(employee.getEmail());
+                    response.setDateOfJoining(employee.getDateOfJoining());
+                    response.setTotalCount(totalCount);
+                    return response;
+                })
+                .collect(Collectors.toList());
+
+        // You can now use totalCount directly where needed
+        // For example, you could return the employeeResponses and handle totalCount elsewhere if necessary
+        return employeeResponses;
     }
-
-
 
     public void deleteEmployeeById(Integer id) {
         Optional<Employee> employeeOptional=employeeRepository.findById(id);

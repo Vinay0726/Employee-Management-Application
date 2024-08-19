@@ -1,6 +1,7 @@
 package com.emservices.Employee.Management.Application.controller;
 
 import com.emservices.Employee.Management.Application.dto.EmployeeRequest;
+import com.emservices.Employee.Management.Application.dto.EmployeeResponse;
 import com.emservices.Employee.Management.Application.entity.Employee;
 import com.emservices.Employee.Management.Application.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +19,10 @@ public class EmployeeController {
 
 //    for getting all employees
 @GetMapping("employees")
-public List<Employee> getAllEmployees(@RequestParam(defaultValue = "0") int page,
-                                      @RequestParam(defaultValue = "5") int limit,
-                                      @RequestParam(required = false) String search) {
-    List<Employee> employeeList = employeeService.getAllEmployees(page, limit, search);
+public List<EmployeeResponse> getAllEmployees(@RequestParam(defaultValue = "0") int page,
+                                              @RequestParam(defaultValue = "5") int limit,
+                                              @RequestParam(required = false) String search) {
+    List<EmployeeResponse> employeeList = employeeService.getAllEmployees(page, limit, search);
     return employeeList;
 }
 
