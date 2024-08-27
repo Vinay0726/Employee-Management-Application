@@ -11,7 +11,8 @@ import java.util.List;
 
 @RestController
 //@CrossOrigin("http://localhost:5173/")
-@CrossOrigin("https://employee-ms-vinay.netlify.app/")
+//@CrossOrigin("https://employee-ms-vinay.netlify.app/")
+@CrossOrigin("https://technocratshub.online/Vinay_Thaware/EmployeeMS/")
 public class EmployeeController {
 
     @Autowired
